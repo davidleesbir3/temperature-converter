@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { Container, Grid, styled, ThemeProvider } from "@mui/material";
+import {
+  Container,
+  Grid,
+  styled,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 
 import "./App.css";
 import theme from "./assets/theme";
@@ -143,7 +149,7 @@ function App() {
 
         <Container>
           <Grid container spacing={0} sx={{ minHeight: "100vh" }}>
-            <ColumnGridItem item xs={12} sm={6}>
+            <ColumnGridItem item xs={12} sm={5}>
               <TemperatureField
                 value={leftTemperature}
                 onChange={handleLeftTemperatureChange}
@@ -154,10 +160,12 @@ function App() {
                 onChange={handleLeftUnitChange}
               />
             </ColumnGridItem>
-            {/* <ColumnGridItem item xs={12} sm={1}>
-              <CompareArrowsIcon fontSize="large" />
-            </ColumnGridItem> */}
-            <ColumnGridItem item xs={12} sm={6}>
+            <ColumnGridItem item xs={12} sm={2}>
+              <Typography variant="h1" color={"primary"}>
+                =
+              </Typography>
+            </ColumnGridItem>
+            <ColumnGridItem item xs={12} sm={5}>
               <TemperatureField
                 value={rightTemperature}
                 onChange={handleRightTemperatureChange}
