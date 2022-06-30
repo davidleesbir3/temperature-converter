@@ -1,26 +1,35 @@
 import PropTypes from "prop-types";
 
 import { Box, FormControl, MenuItem, Select } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
 import { temperatureUnits } from "../util.js";
 
+/**
+ * Custom styled Select component
+ */
+const UnitSelect = styled(Select)(({ theme }) => ({
+  fontSize: 32,
+  color: theme.palette.text.secondary,
+}));
+
+/**
+ * Temperature unit selector.
+ *
+ * @param {*} props
+ * @returns
+ */
 export default function UnitSelector({ value, onChange }) {
   return (
-    <Box sx={{ minWidth: 140 }}>
+    <Box>
       <FormControl fullWidth>
-        <Select
-          labelId="input-unit-select"
-          id="input-unit-select"
-          value={value}
-          onChange={onChange}
-          variant="standard"
-        >
+        <UnitSelect value={value} onChange={onChange} variant="standard">
           {temperatureUnits.map((value) => (
             <MenuItem key={value} value={value}>
               {value}
             </MenuItem>
           ))}
-        </Select>
+        </UnitSelect>
       </FormControl>
     </Box>
   );

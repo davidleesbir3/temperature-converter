@@ -1,8 +1,17 @@
+// Constants serving as enum for supported temperature units
 const UNIT_CELSIUS = "Celsius",
   UNIT_FAHRENHEIT = "Fahrenheit";
 
+// Supported temperatures
 const temperatureUnits = [UNIT_CELSIUS, UNIT_FAHRENHEIT];
 
+/**
+ * Helper function that converts a temperature in Celsius to the
+ * corresponding value in the specified unit
+ * @param {Number} temperature
+ * @param {string} toUnit
+ * @returns the converted temperature
+ */
 function fromCelsiusTo(temperature, toUnit) {
   switch (toUnit) {
     case UNIT_FAHRENHEIT:
@@ -13,6 +22,13 @@ function fromCelsiusTo(temperature, toUnit) {
   }
 }
 
+/**
+ * Helper function that converts a temperature in Fahrenheit to the
+ * corresponding value in the specified unit
+ * @param {Number} temperature
+ * @param {string} toUnit
+ * @returns the converted temperature
+ */
 function fromFahrenheitTo(temperature, toUnit) {
   switch (toUnit) {
     case UNIT_CELSIUS:

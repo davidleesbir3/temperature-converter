@@ -1,8 +1,9 @@
-import "./App.css";
-
-import { Grid } from "@mui/material";
-
 import { useEffect, useState } from "react";
+
+import { Container, Grid, styled, ThemeProvider } from "@mui/material";
+
+import "./App.css";
+import theme from "./assets/theme";
 import HeaderBar from "./components/Header";
 import TemperatureField from "./components/TemperatureField";
 import UnitSelector from "./components/UnitSelector";
@@ -14,6 +15,17 @@ import {
   UNIT_FAHRENHEIT,
 } from "./util.js";
 
+/**
+ * A Grid item component customized to be the container of
+ * left and right halves of the app view
+ */
+const ColumnGridItem = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
 function App() {
   const [leftTemperature, setLeftTemperature] = useState("0");
   const [rightTemperature, setRightTemperature] = useState("");
@@ -21,18 +33,26 @@ function App() {
   const [rightUnit, setRightUnit] = useState(temperatureUnits[1]);
 
   useEffect(() => {
-    const newRightValue = doCalculation(leftTemperature, leftUnit, rightUnit);
-    setRightTemperature(newRightValue === null ? "" : newRightValue);
+    setRightTemperature(doCalculation(leftTemperature, leftUnit, rightUnit));
   }, []);
 
+  /**
+   * Update the both temperatures accordingly when the temperature
+   * on the left is changed
+   * @param {*} event
+   */
   const handleLeftTemperatureChange = (event) => {
     const newLeftValue = event.target.value;
-    const newRightValue =
-      doCalculation(newLeftValue, leftUnit, rightUnit) || "";
+    const newRightValue = doCalculation(newLeftValue, leftUnit, rightUnit);
     setLeftTemperature(newLeftValue);
     setRightTemperature(newRightValue);
   };
 
+  /**
+   * Update the both temperatures accordingly when the unit
+   * on the left is changed
+   * @param {*} event
+   */
   const handleLeftUnitChange = (event) => {
     const newLeftUnit = event.target.value;
     let newRightUnit = newLeftUnit === rightUnit ? leftUnit : rightUnit;
@@ -45,17 +65,27 @@ function App() {
       newLeftUnit,
       newRightUnit
     );
-    setRightTemperature(newRightValue === null ? "" : newRightValue);
+
+    setRightTemperature(newRightValue);
   };
 
+  /**
+   * Update the both temperatures accordingly when the temperature
+   * on the right is changed
+   * @param {*} event
+   */
   const handleRightTemperatureChange = (event) => {
     const newRightValue = event.target.value;
-    const newLeftValue =
-      doCalculation(newRightValue, rightUnit, leftUnit) || "";
+    const newLeftValue = doCalculation(newRightValue, rightUnit, leftUnit);
     setLeftTemperature(newLeftValue);
     setRightTemperature(newRightValue);
   };
 
+  /**
+   * Update the both temperatures accordingly when the unit
+   * on the right is changed
+   * @param {*} event
+   */
   const handleRightUnitChange = (event) => {
     const newRightUnit = event.target.value;
     let newLeftUnit = newRightUnit === leftUnit ? rightUnit : leftUnit;
@@ -63,21 +93,26 @@ function App() {
     setLeftUnit(newLeftUnit);
     setRightUnit(newRightUnit);
 
-    const newRightValue = doCalculation(
-      leftTemperature,
-      newLeftUnit,
-      newRightUnit
+    const newLeftValue = doCalculation(
+      rightTemperature,
+      newRightUnit,
+      newLeftUnit
     );
-    setRightTemperature(newRightValue === null ? "" : newRightValue);
+    setLeftTemperature(newLeftValue);
   };
 
+  /**
+   * A helper function that, with the provided temperature and unit, calculates the temperature in toUnit.
+   * A string representing the resulting temperature is returned
+   * @param {string} fromTemperature
+   * @param {string} fromUnit
+   * @param {string} toUnit
+   *
+   * @returns A string representing the resulting temperature
+   */
   const doCalculation = (fromTemperature, fromUnit, toUnit) => {
     const inputValue = parseFloat(fromTemperature);
     let outputValue = null;
-
-    console.log(
-      `doCalculation - input value: ${inputValue}, input unit: ${fromUnit}, output unit: ${toUnit}`
-    );
 
     if (isNaN(inputValue)) {
       return "";
@@ -94,61 +129,49 @@ function App() {
         break;
     }
 
+    // Display at most 3 places after decimal points. In the case of something like
+    // "2.100", the trailing zeros should be removed, so "2.1" will be displayed.
     const fixed = outputValue.toFixed(3),
       str = outputValue.toString();
-
     return parseFloat(fixed) === parseFloat(str) ? str : fixed;
   };
 
   return (
-    <div className="App">
-      <HeaderBar />
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <HeaderBar />
 
-      <Grid container spacing={0} sx={{ minHeight: "640px" }}>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TemperatureField
-            value={leftTemperature}
-            onChange={handleLeftTemperatureChange}
-          />
-          <UnitSelector
-            options={temperatureUnits}
-            value={leftUnit}
-            onChange={handleLeftUnitChange}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TemperatureField
-            value={rightTemperature}
-            onChange={handleRightTemperatureChange}
-          />
-          <UnitSelector
-            options={temperatureUnits}
-            value={rightUnit}
-            onChange={handleRightUnitChange}
-          />
-        </Grid>
-      </Grid>
-    </div>
+        <Container>
+          <Grid container spacing={0} sx={{ minHeight: "100vh" }}>
+            <ColumnGridItem item xs={12} sm={6}>
+              <TemperatureField
+                value={leftTemperature}
+                onChange={handleLeftTemperatureChange}
+              />
+              <UnitSelector
+                options={temperatureUnits}
+                value={leftUnit}
+                onChange={handleLeftUnitChange}
+              />
+            </ColumnGridItem>
+            {/* <ColumnGridItem item xs={12} sm={1}>
+              <CompareArrowsIcon fontSize="large" />
+            </ColumnGridItem> */}
+            <ColumnGridItem item xs={12} sm={6}>
+              <TemperatureField
+                value={rightTemperature}
+                onChange={handleRightTemperatureChange}
+              />
+              <UnitSelector
+                options={temperatureUnits}
+                value={rightUnit}
+                onChange={handleRightUnitChange}
+              />
+            </ColumnGridItem>
+          </Grid>
+        </Container>
+      </div>
+    </ThemeProvider>
   );
 }
 

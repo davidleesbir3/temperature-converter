@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+/* .MuiInputBase.input.MuiInput.input {
+  font-size: 98;
+} */
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none; 
+}
