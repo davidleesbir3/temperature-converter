@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# Temperature Converter
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A minimalist app that allows you to convert temperature between Cesius and Fahrenheit.
 
-## Available Scripts
+## Prerequisite
+Before you can run this application locally, you need to have [Node.js](https://nodejs.org/en/download/) and npm installed in your local environment.
 
-In the project directory, you can run:
+## Usage
 
-### `npm start`
+In the project directory, run
 
-Runs the app in the development mode.\
+```npm install```
+
+to install the required packages for this app.
+
+`npm start`
+
+to run the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
+`npm run build`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+to builds the app for production to the `build` folder.\
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## UI Design
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2-way conversion
+Many conversion apps have a destinated input and destinated output. In other words, users always enter the input from one place 
+and the output is always displayed at another. The main design decision I made is to have 2-way conversion, which means the user can 
+enter the temperature from either place, the conversion will be performed and the displayed temperatures are updated accordingly.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+This approach has the following implications:
 
-### `npm run eject`
+- There are 2 main components, each has a temperature and unit
+- Each of the components above serves as both an input and output component.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+I decided to go for this approach based on personal experiences with similar conversion applications (eg. currency exchange or translation apps). For example, after I converted $100 USD to JPY, I might want to find out how much USD is ￥40000. In such cases, one way to do it is to change the currency from USD to JPY in the input field, then change the amount to 40000. This works fine, but I think it can be a better user experience if I can
+directly change the amount in the output field to 40000, then the amount in the (orginal) input field will be updated.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Real-time conversion
+Another decision made in terms of UX design is real-time conversion, meaning that it doesn't require users to hit a "convert" button or something like that. Conversion happens in real time when the temperatures or unit is updated.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Layout
 
-## Learn More
+The layout is composed of two equivalent parts: left and right panels (or top bottom in narrower screen). Each panel has two components: one for entering and displaying temperature, the other for selecting unit.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The temperature component is significantly larger than the unit selector. This is an intentional decision hoping to make the temperatures the main focus.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Limitation
+A limitation introduced by my design is that the user is only interested in the conversion between **two units**. So it's not optimal for use cases in which the user wants to know what 100 Celsius is in Fahrenheit and Kelvin at the same time.
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Technical design
+The following section summarizes my key technical decisions.
 
-### Analyzing the Bundle Size
+### React
+I picked [React](https://reactjs.org/) as the frontend framework for this project as it's suitable for developing a light-weight, simple frontend application like this one. There is not a whole lot of UI states that need to be managed, so state management can be handled with React's built-in hooks without a problem.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Also, React makes it easy to create reusable components, and as our UI can be broken down into a few self-contained UI components, it makes sense to use React.
 
-### Making a Progressive Web App
+### MUI
+[MUI](https://mui.com/) provides a rich set of user interface components styled in Google's material design. It makes it a lot easier to create UI components and layout in this app. One down side I found with MUI is that it's not always easy to customize the styles if your design theme is different from the built-in one. However this is not a problem in this project.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Key components
+With the 2-way conversion approach in mind, the app can be broken down into the following key components:
+- `App` components as the root component that contains everything, which contains the JSX for the top-level layout. It also contains the business logic of state management and temperature conversion.
+- `TemperatureField` - a customized MUI INPUT field for entering and displaying temperature.
+- `UnitSelector` - a customized MUI Select compoent for selecting temperature unit.
 
-### Advanced Configuration
+Note that `TemperatureField` and `UnitSelector` don't handle any business logic here. 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Conversion logic
+Conversion logic are executed upon the events of user interaction, either when they change the temperature or unit. Upon such events, the following logic is executed:
 
-### Deployment
+1. Read the updated value (either temperature or unit)
+2. Depending on which value is updated, determine the input temperature, input unit and output unit.
+3. Based on the result of step 2, calculate the output temperature.
+4. Update the values of `TemeratureField` and `UnitSelector`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+In the actual implentation, the process described above all starts in the `onChange()` handler of `TemperatureField`'s and `UnitSelector`'s.
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
